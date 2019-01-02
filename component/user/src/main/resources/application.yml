@@ -1,0 +1,6 @@
+server:
+  port: 8088
+mybatis:
+  config-locations: mybatis/mybatis-config.xml
+  mapper-locations: mybatis/mapper/*.xml
+  type-aliases-package: com.pandy.blog.po
