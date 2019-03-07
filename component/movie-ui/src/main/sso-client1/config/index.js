@@ -11,11 +11,11 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/client1/**':{
+      '/moviecase/**':{
         target: 'http://localhost:16141', //这里面是你要访问的IP地址
         changeOrigin: true, //开启代理
       },
-      '/client2/**':{
+      '/bookcase/**':{
         target: 'http://localhost:16142', //这里面是你要访问的IP地址
         changeOrigin: true, //开启代理
       },
@@ -52,7 +52,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps

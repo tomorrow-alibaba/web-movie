@@ -1,2 +1,12 @@
 server:
   port: 16141
+spring:
+  mvc:
+    favicon:
+      enabled: true
+    view:
+      prefix: /client1
+      suffix: .html
+  favicon:
+      enabled: true
+

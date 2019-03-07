@@ -24,7 +24,6 @@ public class CustomFilter implements Filter {
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
 			throws IOException, ServletException {
 		// TODO Auto-generated method stub
-		System.out.println("自定义过滤器->doFilter");
 		filterChain.doFilter(servletRequest, servletResponse);
 
 	}

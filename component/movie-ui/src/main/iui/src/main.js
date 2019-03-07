@@ -45,6 +45,9 @@ axios.interceptors.response.use((response) => {
         window.location.href = rediectUrl + '?token=' + token;
       }
     }
+  } else if (401 === error.response.status) {
+    debugger
+    window.location.href = error.response.headers.location;
   } else {
     return Promise.reject(error);
   }

@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -34,7 +35,7 @@ public class ServerFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
         // TODO Auto-generated method stub
-//        System.out.println("×Ô¶¨Òå¹ıÂËÆ÷->doFilter");
+//        System.out.println("è‡ªå®šä¹‰è¿‡æ»¤å™¨->doFilter");
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String url = request.getRequestURI();
@@ -43,17 +44,34 @@ public class ServerFilter implements Filter {
             return;
         }
         HttpSession session = request.getSession();
-        if (session.getAttribute("isLogin") != null) {
 //            String clientUrl = request.getParameter("redirect_url");
 //            String token = (String) session.getAttribute("token");
-//            //¿Í»§¶Ë·¢¹ıÀ´µÄÌø×ªÇëÇó
+//            //å®¢æˆ·ç«¯å‘è¿‡æ¥çš„è·³è½¬è¯·æ±‚
 //            if (clientUrl != null && !"".equals(clientUrl)) {
-//                // ´æ´¢£¬ÓÃÓÚ×¢Ïú
+//                // å­˜å‚¨ï¼Œç”¨äºæ³¨é”€
 //                response.setStatus(403);
 //                response.setHeader("token",token);
 //                response.setHeader("Location",clientUrl);
 //                return;
 //            }
+
+        if (url.contains("/user/status")) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("token".equals(cookie.getName())) {
+                        if (cookie.getValue() != null) { //å‡è®¾éªŒè¯æœ‰æ•ˆ
+                            response.sendRedirect(request.getHeader("Referer") + "?token=" + cookie.getValue());
+                            return;
+                        }
+                    }
+                }
+            }
+            response.sendRedirect(request.getHeader("Referer"));
+//            response.setStatus(401);
+//            response.setHeader("Location", "http://sso.server.com:8080");
+//            response.setHeader("redirect_url", request.getHeader("Referer"));
+            return;
         }
         if (url.contains("/user/login")) {
             filterChain.doFilter(servletRequest, servletResponse);

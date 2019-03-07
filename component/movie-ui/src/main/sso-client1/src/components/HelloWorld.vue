@@ -1,17 +1,26 @@
 <template>
-  <el-row>
-    <el-button>默认按钮</el-button>
-    <el-button type="primary">主要按钮</el-button>
-    <el-button type="success">成功按钮</el-button>
-    <el-button type="info">信息按钮</el-button>
-    <el-button type="primary" @click.native.prevent="hello1">访问客户端1</el-button>
-    <el-button type="primary" @click.native.prevent="hello2">访问客户端2</el-button>
-    <el-button type="warning">警告按钮</el-button>
-    <el-button type="danger">危险按钮</el-button>
+  <div>
+    <h1>{{ user }}</h1>
+    <el-row>
+      <el-button>默认按钮</el-button>
+      <el-button type="primary">主要按钮</el-button>
+      <el-button type="success">成功按钮</el-button>
+      <el-button type="info">信息按钮</el-button>
+      <el-button type="primary" @click.native.prevent="getMovies">访问影壳</el-button>
+      <el-button type="warning">警告按钮</el-button>
+      <el-button type="danger">危险按钮</el-button>
       <div class="hello">
-      <h1>{{ msg }}</h1>
-    </div>
-  </el-row>
+        <h1>{{ msg }}</h1>
+      </div>
+    </el-row>
+    <div class="go-back" v-show="goBackState" @click="goBack">回去</div>
+    <ul>
+      <li v-for="item in webAddress" :key='item'>
+        <a :href="item.link" target="showHere" @click="showIframe">{{item.name}}</a>
+      </li>
+    </ul>
+    <iframe v-show="iframeState" id="show-iframe" frameborder=0 name="showHere" scrolling=auto src=""></iframe>
+  </div>
 </template>
 
 <script>
@@ -20,57 +29,71 @@ export default {
   data() {
     return {
       msg: "",
-      token: ""
+      token: "",
+      user: "",
+      webAddress: [{
+        name: 'SSO-SERVER',
+        link: 'http://sso.server.com:8088/index.html'
+      }],
+      iframeState: false,
+      goBackState: false,
     };
   },
-  mounted: function() {
-    this.token = this.getQueryString("token");
+  mounted: function () {
+    this.getUser();
+    const oIframe = document.getElementById('show-iframe');
+    const deviceWidth = document.documentElement.clientWidth;
+    const deviceHeight = document.documentElement.clientHeight;
+    oIframe.style.width = deviceWidth + 'px';
+    oIframe.style.height = deviceHeight + 'px';
   },
   methods: {
-    getQueryString(name) {
-      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-      var r = window.location.search.substr(1).match(reg);
-      if (r != null) {
-        return unescape(r[2]);
-      }
-      return null;
+
+    getUser() {
+      var url = "/moviecase/user";
+      this.$ajax.get(url).then(resp => {
+        if (resp.data == "" || resp.data == null) {
+          this.user = "尚未登录用户";
+        } else {
+          this.user = "影壳用户：" + resp.data;
+        }
+      }).catch(err => {
+        console.log(err);
+        console.log("请求失败：" + err.status + "," + err.statusText);
+      });
     },
-    getToken(url) {
-      if (this.token && this.token != "") {
-        var tokenUrl = url + "?token=" + this.token;
-        return tokenUrl;
-      } else {
-        return url;
-      }
+
+    goBack() {
+      console.log('回到主页');
+      this.goBackState = false;
+      this.iframeState = false;
     },
-    hello1() {
-      var url = this.getToken("/client1/hello");
-      console.log(url);
-      this.$ajax
-        .get(url)
-        .then(resp => {
-          this.msg = resp.data;
-          console.log(resp.data);
-        })
-        .catch(err => {
-          console.log(err);
-          console.log("请求失败：" + err.status + "," + err.statusText);
-        });
+    showIframe() {
+      console.log('显示iframe');
+      this.goBackState = true;
+      this.iframeState = true;
     },
-    hello2() {
-      var url = this.getToken("/client2/hello");
-      console.log(url);
-      this.$ajax
-        .get(url)
-        .then(resp => {
-          this.msg = resp.data;
-          console.log(resp.data);
-        })
-        .catch(err => {
-          console.log(err);
-          console.log("请求失败：" + err.status + "," + err.statusText);
-        });
+
+    // getQueryString(name) {
+    //   var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    //   var r = window.location.search.substr(1).match(reg);
+    //   if (r != null) {
+    //     return unescape(r[2]);
+    //   }
+    //   return null;
+    // },
+
+    getMovies() {
+      var url = "/moviecase/movies";
+      this.$ajax.get(url).then(resp => {
+        this.msg = resp.data;
+        console.log(resp.data);
+      }).catch(err => {
+        console.log(err);
+        console.log("请求失败：" + err.status + "," + err.statusText);
+      });
     },
+
   }
 };
 </script>

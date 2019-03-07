@@ -41,14 +41,14 @@ export default {
       checked: true
     };
   },
-  beforeCreate: function() {
+  beforeCreate: function () {
     console.log(this);
     //this.showData("创建vue实例前", this);
   },
-  created: function() {
+  created: function () {
     // this.showData("创建vue实例后", this);
   },
-  beforeMount: function() {
+  beforeMount: function () {
     // this.showData("挂载到dom前", this);
   },
   //页面渲染完成后
@@ -56,16 +56,16 @@ export default {
     this.redirectUrl = this.getQueryString("redirect_url");
     console.log(this.redirectUrl);
   },
-  beforeUpdate: function() {
+  beforeUpdate: function () {
     // this.showData("数据变化更新前", this);
   },
-  updated: function() {
+  updated: function () {
     // this.showData("数据变化更新后", this);
   },
-  beforeDestroy: function() {
+  beforeDestroy: function () {
     // this.showData("vue实例销毁前", this);
   },
-  destroyed: function() {
+  destroyed: function () {
     // this.showData("vue实例销毁后", this);
   },
   methods: {
@@ -82,7 +82,8 @@ export default {
     },
     getQueryString(name) {
       var search = window.location.search;
-      var queryString = window.decodeURIComponent(window.atob(search.substr(1)));
+      // var queryString = window.decodeURIComponent(window.atob(search.substr(1)));
+      var queryString = search.substring(1);
       var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
       var r = queryString.match(reg);
       if (r != null) {
@@ -106,8 +107,8 @@ export default {
       var spliceUrl = "";
       if (this.redirectUrl && this.redirectUrl != "") {
         spliceUrl = url + "?redirect_url=" + this.redirectUrl;
-        if(spliceUrl.includes('#')){
-          return spliceUrl.replace('#','%23');
+        if (spliceUrl.includes("#")) {
+          return spliceUrl.replace("#", "%23");
         }
         return spliceUrl;
       } else {
@@ -122,30 +123,24 @@ export default {
       this.login();
     },
     login() {
-      console.log(this.ruleForm.account);
-      console.log(this.ruleForm.checkPass);
       var url = this.getRedirectUrl("/user/login");
       console.log(url);
-      this.$axios
-        .post(url, {
-          name: this.ruleForm.account,
-          password: this.ruleForm.checkPass
-        })
-        .then(resp => {
-          debugger
-          console.log(resp.data);
-          var responseUrl = resp.data;
-          if (responseUrl && responseUrl!="" && responseUrl.includes("redirect:")) {
-            if(responseUrl.includes("token")){
-              var clientUrl = responseUrl.substr(9);
-              var token = responseUrl.split('token=')[1];
-              window.location.href = clientUrl;
-            }
+      this.$axios.post(url, {
+        name: this.ruleForm.account,
+        password: this.ruleForm.checkPass
+      }).then(resp => {
+        console.log(resp);
+        var responseUrl = resp.data;
+        if (responseUrl && responseUrl != "" && responseUrl.includes("redirect:")) {
+          if (responseUrl.includes("token")) {
+            var clientUrl = responseUrl.substr(9);
+            var token = responseUrl.split("token=")[1];
+            window.location.href = clientUrl;
           }
-        })
-        .catch(err => {
-          console.log("请求失败：" + err.status + "," + err.statusText);
-        });
+        }
+      }).catch(err => {
+        console.log("请求失败：" + err.status + "," + err.statusText);
+      });
     },
     registerSubmit() {
       this.$axios
